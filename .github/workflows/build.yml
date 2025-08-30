@@ -446,8 +446,9 @@ jobs:
           echo "GCC_VERSION=${GCC_VERSION}" >> $GITHUB_OUTPUT
       - name: Create archive
         run: |
-          cd ${MPREFIX}
-          tar -czvf x86_64-linux-musl-gcc-${GCC_VERSION}.tar.gz .
+          sync
+          cd ${HOME}
+          tar -czvf x86_64-linux-musl-gcc-${GCC_VERSION}.tar.gz -C ${MPREFIX} .
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -464,4 +465,4 @@ jobs:
             - MPFR: ${{ env.MPFR_VERSION }}
             - MPC: ${{ env.MPC_VERSION }}
           files: |
-            ${{ env.MPREFIX }}/x86_64-linux-musl-gcc-${{ env.GCC_VERSION }}.tar.gz
+            ${{ env.HOME }}/x86_64-linux-musl-gcc-${{ env.GCC_VERSION }}.tar.gz
