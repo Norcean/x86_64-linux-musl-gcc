@@ -441,23 +441,25 @@ jobs:
       - name: Get GCC version
         id: gcc_version
         run: |
-          GCC_INFO=$(${MPREFIX}/bin/x86_64-linux-musl-gcc --version | head -n1)
-          GCC_VERSION=$(echo "$GCC_INFO" | awk '{print $3}')
-          GCC_DATE=$(echo "$GCC_INFO" | awk '{print $4}')
+          GCC_INFO=$(${MPREFIX}/bin/x86_64-linux-musl-gcc --version | head -n1 | cut -d' ' -f3-)
+          GCC_VERSION=$(echo "$GCC_INFO" | cut -d' ' -f1)
+          GCC_DATE=$(echo "$GCC_INFO" | cut -d' ' -f2)
           echo "GCC_VERSION=${GCC_VERSION}" >> $GITHUB_ENV
           echo "GCC_DATE=${GCC_DATE}" >> $GITHUB_ENV
+          echo "GCC_INFO=${GCC_INFO}" >> $GITHUB_ENV
           echo "GCC_VERSION=${GCC_VERSION}" >> $GITHUB_OUTPUT
           echo "GCC_DATE=${GCC_DATE}" >> $GITHUB_OUTPUT
+          echo "GCC_INFO=${GCC_INFO}" >> $GITHUB_OUTPUT
       - name: Create archive
         run: |
           sync
           cd ${HOME}
-          tar -czvf x86_64-linux-musl-gcc-${GCC_VERSION}.tar.gz -C ${MPREFIX} .
+          tar -czvf x86_64-linux-musl-gcc-${GCC_DATE}.tar.gz -C ${MPREFIX} .
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: gcc-${{ env.GCC_VERSION }}-${{ env.GCC_DATE }}
-          name: "x86_64-linux-musl-gcc ${{ env.GCC_VERSION }}"
+          name: "x86_64-linux-musl-gcc ${{ env.GCC_INFO }}"
           body: |
             Built x86_64-linux-musl-gcc toolchain version ${{ env.GCC_INFO }}
             Components:
@@ -469,4 +471,4 @@ jobs:
             - MPFR: ${{ env.MPFR_VERSION }}
             - MPC: ${{ env.MPC_VERSION }}
           files: |
-            ${{ env.HOME }}/x86_64-linux-musl-gcc-${{ env.GCC_VERSION }}.tar.gz
+            ${{ env.HOME }}/x86_64-linux-musl-gcc-${{ env.GCC_DATE }}.tar.gz
